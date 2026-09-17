@@ -13161,7 +13161,7 @@
                   "properties": {
                     "action": {
                       "type": "string",
-                      "enum": ["provider.use"]
+                      "enum": ["provider.use", "permission"]
                     },
                     "resource": {
                       "type": "string"

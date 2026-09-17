@@ -48,6 +48,7 @@ import { Integration } from "../integration.js"
 import { Job } from "../job.js"
 import { KV } from "../kv.js"
 import { Location } from "../location.js"
+import { ManagedPolicy } from "../managed-policy.js"
 import { ModelsDev } from "../models-dev.js"
 import { Mcp } from "../mcp/index.js"
 import { Npm } from "@opencode/util/npm"
@@ -89,6 +90,7 @@ import { PlanPlugin } from "./plan.js"
 import { ModelsDevPlugin } from "./models-dev.js"
 import { McpCodeModeExclusionPlugin } from "./mcp-codemode-exclusion.js"
 import { ProviderPlugins } from "./provider.js"
+import { OpencodePlugin } from "./provider/opencode.js"
 import { WebSearchPlugins } from "./websearch/index.js"
 import { SkillPlugin } from "./skill.js"
 import { VcsHgPlugin } from "./vcs/hg.js"
@@ -121,6 +123,7 @@ const services = [
   Job.Service,
   KV.Service,
   Location.Service,
+  ManagedPolicy.Service,
   ModelsDev.Service,
   Mcp.Service,
   Npm.Service,
@@ -172,6 +175,7 @@ export const requirements = LayerNode.group([
   Job.node,
   KV.node,
   Location.node,
+  ManagedPolicy.node,
   ModelsDev.node,
   Mcp.node,
   Npm.node,
@@ -251,6 +255,10 @@ const post = [
   ConfigWebSearchPlugin.Plugin,
   ConfigPolicyPlugin.Plugin,
 ] as const satisfies readonly InternalPlugin[]
+
+// Repository config must not switch off policy enforcement or the Console connection that delivers
+// organization statements, so plugin remove operations skip these IDs.
+export const guarded: ReadonlySet<string> = new Set([OpencodePlugin.id, ConfigPolicyPlugin.Plugin.id])
 
 export const list = Effect.fn("PluginInternal.list")(function* () {
   // Capture only services; activation supplies the child Scope and batching context.
