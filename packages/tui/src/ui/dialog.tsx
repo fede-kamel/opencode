@@ -17,12 +17,18 @@ export function Dialog(
   const dimensions = useTerminalDimensions()
   const { theme } = useTheme()
   const renderer = useRenderer()
+  const dialog = useDialog()
 
   let dismiss = false
   const width = () => {
+    if (dialog.maximized) return dimensions().width - 2
     if (props.size === "xlarge") return 116
     if (props.size === "large") return 88
     return 60
+  }
+  const paddingTop = () => {
+    if (dialog.maximized) return 2
+    return dimensions().height / 4
   }
 
   return (
@@ -42,7 +48,7 @@ export function Dialog(
       alignItems="center"
       position="absolute"
       zIndex={3000}
-      paddingTop={dimensions().height / 4}
+      paddingTop={paddingTop()}
       left={0}
       top={0}
       backgroundColor={RGBA.fromInts(0, 0, 0, 150)}
@@ -73,6 +79,7 @@ function init() {
       onClose?: () => void
     }[],
     size: "medium" as "medium" | "large" | "xlarge",
+    maximized: false as boolean,
   })
 
   const renderer = useRenderer()
@@ -142,6 +149,7 @@ function init() {
         if (item.onClose) item.onClose()
       }
       batch(() => {
+        setStore("maximized", false)
         setStore("size", "medium")
         setStore("stack", [])
       })
@@ -155,6 +163,7 @@ function init() {
       for (const item of store.stack) {
         if (item.onClose) item.onClose()
       }
+      setStore("maximized", false)
       setStore("size", "medium")
       setStore("stack", [
         {
@@ -171,6 +180,12 @@ function init() {
     },
     setSize(size: "medium" | "large" | "xlarge") {
       setStore("size", size)
+    },
+    toggleMaximize() {
+      setStore("maximized", (v) => !v)
+    },
+    get maximized() {
+      return store.maximized
     },
   }
 }

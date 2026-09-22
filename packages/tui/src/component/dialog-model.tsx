@@ -1,4 +1,4 @@
-import { createMemo, createSignal } from "solid-js"
+import { createMemo, createSignal, onMount } from "solid-js"
 import { useLocal } from "../context/local"
 import { map, pipe, flatMap, entries, filter, sortBy, take } from "remeda"
 import { DialogSelect } from "../ui/dialog-select"
@@ -14,6 +14,11 @@ export function DialogModel(props: { providerID?: string }) {
   const sync = useSync()
   const dialog = useDialog()
   const [query, setQuery] = createSignal("")
+  const maximizeTitle = createMemo(() => (dialog.maximized ? "Restore" : "Maximize"))
+
+  onMount(() => {
+    dialog.setSize("xlarge")
+  })
 
   const connected = useConnected()
   const providers = createDialogProviderOptions()
@@ -171,6 +176,13 @@ export function DialogModel(props: { providerID?: string }) {
           hidden: !connected(),
           onTrigger: (option) => {
             local.model.toggleFavorite(option.value as { providerID: string; modelID: string })
+          },
+        },
+        {
+          command: "model.dialog.maximize",
+          title: maximizeTitle(),
+          onTrigger() {
+            dialog.toggleMaximize()
           },
         },
       ]}

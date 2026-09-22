@@ -210,7 +210,14 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
   })
 
   const dimensions = useTerminalDimensions()
-  const height = createMemo(() => Math.min(rows(), Math.floor(dimensions().height / 2) - 6))
+  // A maximized dialog gives the list the full terminal height, less the rows its own title,
+  // search field, action bar and padding take up.
+  const height = createMemo(() =>
+    Math.min(
+      rows(),
+      dialog.maximized ? Math.max(1, dimensions().height - 12) : Math.floor(dimensions().height / 2) - 6,
+    ),
+  )
 
   const selected = createMemo(() => flat()[store.selected])
 
