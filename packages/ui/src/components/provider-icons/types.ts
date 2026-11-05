@@ -38,6 +38,7 @@ export const iconNames = [
   "opencode-go",
   "openai",
   "ollama-cloud",
+  "oci",
   "nvidia",
   "novita-ai",
   "nova",
